@@ -6,15 +6,25 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.Random;
 
+/**
+ * The Grid class represents a grid of cells for a Game of Life simulation using JavaFX.
+ */
 public final class Grid {
     private final GridPane gridPane = new GridPane();
     private final int gridWidth;
     private final int gridHeight;
-    private static final Paint ALIVE_COLOR = /*Color.BLACK*/Color.ANTIQUEWHITE;
-    private static final Paint DEAD_COLOR = /*Color.valueOf("f0f0f0")*/Color.valueOf("1f262a");
+    private static final Paint ALIVE_COLOR = Color.ANTIQUEWHITE;
+    private static final Paint DEAD_COLOR = Color.valueOf("1f262a");
     private boolean isStable = true;
     private boolean gameStarted = false;
 
+    /**
+     * Constructs a grid with the specified dimensions and cell size.
+     *
+     * @param gridWidth      The width of the grid.
+     * @param gridHeight     The height of the grid.
+     * @param cellDimension  The size of each cell.
+     */
     public Grid(int gridWidth, int gridHeight, int cellDimension) {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
@@ -31,6 +41,9 @@ public final class Grid {
         installEvents();
     }
 
+    /**
+     * Installs mouse events for grid interaction (clicking or dragging the mouse).
+     */
     public void installEvents() {
         gridPane.setOnMouseDragged(e -> {
             if (!gameStarted) {
@@ -59,19 +72,23 @@ public final class Grid {
         });
     }
 
+    /**
+     * Gets the JavaFX GridPane representing the grid.
+     *
+     * @return The JavaFX GridPane.
+     */
     public GridPane getPane() {
         return gridPane;
     }
 
-    private Rectangle getCellAt(int row, int col) {
-        return (Rectangle) gridPane.getChildren().get(getCellIndex(row, col));
-    }
-
-    private int getCellIndex(int row, int col) {
-        return row * gridWidth + col;
-    }
-
-    private int aliveNeighbours(int row, int col) {
+    /**
+     * Calculates the number of alive neighbors of the cell at position (row, col)
+     *
+     * @param row  The row of the cell in the grid
+     * @param col  The column of the cell in the grid
+     * @return The number of alive neighbours of the cell at position (row, col)
+     */
+    private int neighbours(int row, int col) {
         int nbOfNeighbours = 0;
 
         for (int r = row - 1; r <= row + 1; r++) {
@@ -93,20 +110,19 @@ public final class Grid {
         return nbOfNeighbours;
     }
 
-    public boolean isStable() {
-        return isStable;
-    }
+    /**
+     * Updates the JavaFX GridPane to the next generation according to the Game of Life rules
+     */
     public void update() {
         GridPane temp = new GridPane();
         boolean hasChanged = false;
 
         for (int row = 0; row < gridHeight; ++row) {
             for (int col = 0; col < gridWidth; ++col) {
-                int aliveNeighboursCount = aliveNeighbours(row, col);
+                int aliveNeighboursCount = neighbours(row, col);
                 Rectangle currentCell = getCellAt(row, col);
                 Rectangle newCell = new Rectangle(currentCell.getWidth(), currentCell.getHeight());
                 newCell.setFill(currentCell.getFill());
-                //newCell.setStroke(Color.BLACK);
                 newCell.setStroke(DEAD_COLOR);
                 newCell.setStrokeWidth(0.5);
 
@@ -131,6 +147,42 @@ public final class Grid {
         gridPane.getChildren().addAll(temp.getChildren());
     }
 
+
+    /**
+     * Gets the JavaFX Rectangle at (row, col), representing a cell
+     *
+     * @param row  The row of the cell in the grid
+     * @param col  The column of the cell in the grid
+     * @return The cell at position (row, col) in the grid
+     */
+    private Rectangle getCellAt(int row, int col) {
+        return (Rectangle) gridPane.getChildren().get(getCellIndex(row, col));
+    }
+
+    /**
+     * Gets the index of a cell in the grid based on its row and column
+     *
+     * @param row  The row of the cell in the grid
+     * @param col  The column of the cell in the grid
+     * @return The index of the cell at position (row, col) in the grid
+     */
+    private int getCellIndex(int row, int col) {
+        return row * gridWidth + col;
+    }
+
+
+    /**
+     * Indicates if the Game of Life has reached a stable state
+     * @return True if the Game of Life is in a stable state
+     */
+    public boolean isStable() {
+        return isStable;
+    }
+
+
+    /**
+     * Resets the JavaFX GridPane to a grid where every cell is dead
+     */
     public void reset() {
         for (Node node : gridPane.getChildren()) {
             Rectangle rectangle = (Rectangle) node;
@@ -138,6 +190,9 @@ public final class Grid {
         }
     }
 
+    /**
+     * Creates a random configuration for the JavaFX GridPane of cells
+     */
     public void randomizeGrid() {
         Random random = new Random();
         for (Node node : gridPane.getChildren()) {
@@ -146,31 +201,50 @@ public final class Grid {
         }
     }
 
+    /**
+     * Used to indicate that the Game of Life is running or not
+     * @param gameStarted  Indicates if the game has started
+     */
     public void setGameStarted(boolean gameStarted) {
         this.gameStarted = gameStarted;
     }
 
+    /**
+     * Gets the information whether the game is running or not
+     * @return The variable gameStarted
+     */
     public boolean gameStarted() {
         return gameStarted;
     }
 
-    public enum PredefinedStartingPosition {
+    /**
+     * Defines a few known patterns for the grid
+     */
+    public enum Pattern {
         GLIDER,
         GOSPER_GLIDER_GUN,
         SIMKIN_GLIDER_GUN,
         COOL_GLIDER;
     }
 
-    public void setPredefinedStartingPosition(PredefinedStartingPosition position) {
+    /**
+     * Sets the given pattern to the grid
+     * @param pattern  Starting pattern for the grid
+     */
+    public void applyPattern(Pattern pattern) {
         reset();
-        switch (position) {
-            case GLIDER -> addGliderPattern();
-            case GOSPER_GLIDER_GUN -> addGosperGliderGunPattern();
-            case SIMKIN_GLIDER_GUN -> addSimkinGlierGunPattern();
-            case COOL_GLIDER -> addCoolGliderPattern();
+        switch (pattern) {
+            case GLIDER -> applyGliderPattern();
+            case GOSPER_GLIDER_GUN -> applyGosperGliderGunPattern();
+            case SIMKIN_GLIDER_GUN -> applySimkinGliderGunPattern();
+            case COOL_GLIDER -> applyCoolGliderPattern();
         }
     }
-    private void addGliderPattern() {
+
+    /**
+     * Applies the glider pattern to the grid
+     */
+    private void applyGliderPattern() {
         int startX = 5;  // Starting X coordinate of the glider pattern
         int startY = 5;  // Starting Y coordinate of the glider pattern
 
@@ -188,7 +262,10 @@ public final class Grid {
         }
     }
 
-    private void addGosperGliderGunPattern() {
+    /**
+     * Applies the Gosper Glider Gun pattern to the grid
+     */
+    private void applyGosperGliderGunPattern() {
         int startX = 1;  // Starting X coordinate of the glider gun pattern
         int startY = 1;  // Starting Y coordinate of the glider gun pattern
 
@@ -209,7 +286,10 @@ public final class Grid {
         }
     }
 
-    private void addSimkinGlierGunPattern() {
+    /**
+     * Applies the Simkin Glider Gun pattern to the grid
+     */
+    private void applySimkinGliderGunPattern() {
         int startX = 40;  // Starting X coordinate of the glider pattern
         int startY = 30;  // Starting Y coordinate of the glider pattern
 
@@ -238,7 +318,10 @@ public final class Grid {
         }
     }
 
-    private void addCoolGliderPattern() {
+    /**
+     * Applies a cool glider pattern to the grid
+     */
+    private void applyCoolGliderPattern() {
         int startX = 50;  // Starting X coordinate of the glider pattern
         int startY = 20;  // Starting Y coordinate of the glider pattern
 

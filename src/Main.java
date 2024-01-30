@@ -18,19 +18,41 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 
+/**
+ * The Main class represents the entry point of the JavaFX application for Conway's Game of Life.
+ */
 public final class Main extends Application {
+    /**
+     * Width of the grid of cells
+     */
     public static final int GRID_WIDTH = 80;
+    /**
+     * Height of the grid of cells
+     */
     public static final int GRID_HEIGHT = 60;
+    /**
+     * Dimensions of each cell
+     */
     public static final int CELL_DIMENSION = 10;
 
     private Grid grid;
     private AnimationTimer animationTimer;
     private final IntegerProperty generationCount = new SimpleIntegerProperty(0);
 
+    /**
+     * The entry point for the JavaFX application.
+     *
+     * @param args  Command-line arguments.
+     */
     public static void main(String[] args) {
         launch(args);
     }
 
+    /**
+     * Initializes the JavaFX application.
+     *
+     * @param primaryStage  The primary stage for the application.
+     */
     @Override
     public void start(Stage primaryStage) {
         grid = new Grid(GRID_WIDTH, GRID_HEIGHT, CELL_DIMENSION);
@@ -95,6 +117,9 @@ public final class Main extends Application {
         primaryStage.show();
     }
 
+    /**
+     * Starts the animation timer to simulate the Game of Life.
+     */
     private void startAnimation() {
         if (animationTimer != null) {
             animationTimer.stop();
@@ -118,6 +143,9 @@ public final class Main extends Application {
         animationTimer.start();
     }
 
+    /**
+     * Resets the grid and stops the animation timer.
+     */
     private void resetGrid() {
         if (animationTimer != null) {
             animationTimer.stop();
@@ -127,6 +155,11 @@ public final class Main extends Application {
         generationCount.set(0);
     }
 
+    /**
+     * Creates a context menu with options for predefined starting patterns.
+     *
+     * @return The context menu.
+     */
     private ContextMenu createContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
 
@@ -137,25 +170,25 @@ public final class Main extends Application {
 
         glider.setOnAction(e -> {
             if (!grid.gameStarted()) {
-                grid.setPredefinedStartingPosition(Grid.PredefinedStartingPosition.GLIDER);
+                grid.applyPattern(Grid.Pattern.GLIDER);
             }
         });
 
         gosperGliderGun.setOnAction(e -> {
             if (!grid.gameStarted()) {
-                grid.setPredefinedStartingPosition(Grid.PredefinedStartingPosition.GOSPER_GLIDER_GUN);
+                grid.applyPattern(Grid.Pattern.GOSPER_GLIDER_GUN);
             }
         });
 
         simkinGliderGun.setOnAction(e -> {
             if (!grid.gameStarted()) {
-                grid.setPredefinedStartingPosition(Grid.PredefinedStartingPosition.SIMKIN_GLIDER_GUN);
+                grid.applyPattern(Grid.Pattern.SIMKIN_GLIDER_GUN);
             }
         });
 
         coolGlider.setOnAction(e -> {
             if (!grid.gameStarted()) {
-                grid.setPredefinedStartingPosition(Grid.PredefinedStartingPosition.COOL_GLIDER);
+                grid.applyPattern(Grid.Pattern.COOL_GLIDER);
             }
         });
 
