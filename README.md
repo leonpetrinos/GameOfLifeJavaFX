@@ -13,5 +13,9 @@ The Game of Life follows a few fundamental rules:
 ## About the JavaFX Application:
 This project is a JavaFX application that visually simulates Conway's Game of Life. The intuitive graphical user interface allows users to interact with the cellular automaton, observe its evolution, and discover emergent patterns. 
 
+<p align="center">
+  <img src="src/GameOfLifeRecording.gif" alt="Demo of Random Configuration">
+</p>
+
 
 
